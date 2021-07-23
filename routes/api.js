@@ -7,33 +7,45 @@ module.exports = function (app) {
 
   app.route('/api/stock-prices')
     .get(function (req, res){
-      // console.log(req.ip)
       const { ip } = req
       const { stock, like } = req.query;
-      console.log(like)
+      //could just like to boolean but yeah
       fetch(`https://stock-price-checker-proxy.freecodecamp.rocks/v1/stock/${stock}/quote`)
         .then(res => res.json())
         .then(data => {
-          // console.log(data)
           if(!data.symbol){
             res.json({stockData:{ likes : like==="true" ? 1 : 0}})
           }else if(data.symbol){
-            Stock.findOne({stock : data.symbol}, async (err, stock) => {
+            Stock.findOne({symbol : data.symbol}, async (err, stock) => {
               if(err) throw err
               else if(!stock){
                 const newStock = await new Stock({
-                  stock: data.symbol,
-                  likes: like ? [ip] : []
+                  symbol: data.symbol,
+                  likes: like === "true" ? [ip] : []
                 })
-                newStock.save()
+                newStock.save((err, saved) => {
+                  res.json({stockData:{
+                      stock: saved.symbol,
+                      price: saved.latestPrice, 
+                      likes: saved.likes.length
+                  }})
+                })
               }else{
-                if(data.likes.indexOf(ip) = -1 && like){
-                  const pushed = await data.likes.push(ip)
-                  const saved = await data.save()
+                if(stock.likes.indexOf(ip) == -1 && like === "true"){
+                  stock.likes.push(ip)
+                  stock.save((err, updated) => {
+                    res.json({stockData:{
+                      stock: data.symbol,
+                      price: data.latestPrice, 
+                      likes: updated.likes.length}
+                    })
+                  })
+                  
                 }
               }
+
             })
-            res.json({stockData:{stock:data.symbol, price:data.latestPrice}})
+            
           }
           
           // console.log(typeof)
