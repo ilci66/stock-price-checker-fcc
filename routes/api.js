@@ -8,24 +8,96 @@ const findStockInDatabase = async (stock) => {
   return await Stock.findOne({ symbol: stock }).exec();
 }
 
-const saveStock = async () => {
-
+const saveStock = async (stock, like, ip) => {
+  let saved = {}
+  const foundStock = await findStockInDatabase(stock);
+  if(foundStock){
+    if(like === "true" && foundStock.likes.indexOf(ip) === -1){
+      foundStock.likes.push(ip);
+    }
+    saved = await foundStock.save()
+    return saved;
+  }else{
+    const created = await createStock(stock, like, ip);
+    saved = created;
+    return saved;
+  }
 }
 
-const createStock = async () => {
-
+const createStock = async (stock, like, ip) => {
+  const newStock = new Stock({
+    symbol:stock,
+    likes: like==="true" ? [ip] : []
+  });
+  const savedNewStock = await newStock.save();
+  return savedNewStock
 }
 
 const getStockData = async (stock) => {
   const response = await fetch(`https://stock-price-checker-proxy.freecodecamp.rocks/v1/stock/${stock}/quote`)
-  const { symbol, lastestPrice } = await responsejson();
+  const { symbol, latestPrice } = await response.json();
   return { symbol, latestPrice };
 }
 
 module.exports = function (app) {
+
   app.route('/api/stock-prices')
-    .get(function (req, res){
-      
+    .get(async (req, res) => {
+      const { ip } = req;
+      const { stock, like } = req.query;
+
+      if(Array.isArray(stock)){
+        console.log("stocks", stock);
+
+        const { symbol, latestPrice } = await getStockData(stock[0])
+        //this is really cool and I just used it for the first time
+        const { symbol: symbol2, latestPrice: latestPrice2 } = await getStockData(stock[1])
+        //directly pulling data and changing
+
+        const firstStockSaved = await saveStock(stock[0], like, ip);
+        const secondStockSaved = await saveStock(stock[1], like, ip);
+
+        let stockData = []
+        if(!symbol){
+          //need the realtive here
+          stockData.push({rel_likes: firstStockSaved.likes.length - secondStockSaved.likes.length})
+        }else{
+          stockData.push({
+            stock:symbol,
+            price:latestPrice,
+            likes:firstStockSaved.likes.length - secondStockSaved.likes.length
+          })
+        }
+        if(!symbol2){
+          stockData.push({
+            rel_likes: secondStockSaved.likes.length - firstStockSaved.likes.length
+          });
+        }else{
+          stockData.push({
+            stock:symbol2,
+            price:latestPrice2,
+            likes:secondStockSaved.likes.length - firstStockSaved.likes.length 
+          })
+        }
+        res.json({stockData})
+        // res.json({message:"multiple"})
+        return
+      }
+
+      const { symbol, latestPrice } = await getStockData(stock)
+      // console.log(symbol, latestPrice)
+      // res.json({message: "a lot cleaner this way"})
+      if(!symbol){
+        const saved = await saveStock(stock, like, ip)
+        console.log(saved)
+        res.json({stockData:{likes:saved.likes.length}})
+      }
+      const stockDataForOne = await saveStock(stock, like, ip);
+      res.json({stockData:{
+        stock:symbol,
+        price:latestPrice,
+        likes:stockDataForOne.likes.length}
+      })
     })
 }
 // module.exports = function (app) {
