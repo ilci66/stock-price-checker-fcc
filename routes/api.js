@@ -5,7 +5,7 @@ const Stock = require('../models.js')
 
 
 const findStockInDatabase = async (stock) => {
-  return await Stock.findOne({ symbol.stock }).exec();
+  return await Stock.findOne({ symbol: stock }).exec();
 }
 
 const saveStock = async () => {
