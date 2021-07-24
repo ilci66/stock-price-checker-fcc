@@ -16,31 +16,42 @@ module.exports = function (app) {
           if(!data.symbol){
             res.json({stockData:{ likes : like==="true" ? 1 : 0}})
           }else if(data.symbol){
-            Stock.findOne({symbol : data.symbol}, async (err, stock) => {
+            Stock.findOne({symbol : data.symbol}, (err, stock) => {
               if(err) throw err
               else if(!stock){
-                const newStock = await new Stock({
+                console.log('no such stock')
+                const newStock = new Stock({
                   symbol: data.symbol,
                   likes: like === "true" ? [ip] : []
                 })
                 newStock.save((err, saved) => {
+                  console.log('saved the stock')
                   res.json({stockData:{
                       stock: saved.symbol,
-                      price: saved.latestPrice, 
+                      price: data.latestPrice, 
                       likes: saved.likes.length
                   }})
                 })
               }else{
                 if(stock.likes.indexOf(ip) == -1 && like === "true"){
+                  console.log("there's stock and adding like")
                   stock.likes.push(ip)
                   stock.save((err, updated) => {
+                    console.log('found the stock and added like')
                     res.json({stockData:{
                       stock: data.symbol,
                       price: data.latestPrice, 
                       likes: updated.likes.length}
                     })
-                  })
-                  
+                  }) 
+                }
+                else{
+                  console.log("there's stock but not adding like")
+                  res.json({stockData:{
+                    stock: stock.symbol,
+                    price: data.latestPrice,
+                    likes: stock.likes.length
+                  }})
                 }
               }
 

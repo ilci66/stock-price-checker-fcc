@@ -5,7 +5,7 @@
 	"main": "InfoSec project for freeCodeCamp",
 	"scripts": {
 		"start": "node server.js",
-		"devstart": "nodemon server.js" 
+		"devstart": "nodemon server.js"
 	},
 	"dependencies": {
 		"body-parser": "^1.15.2",
