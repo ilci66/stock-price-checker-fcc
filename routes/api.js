@@ -4,6 +4,24 @@ const fetch = require('node-fetch')
 const Stock = require('../models.js')
 
 
+const findStockInDatabase = async (stock) => {
+  return await Stock.findOne({ symbol.stock }).exec();
+}
+
+const saveStock = async () => {
+
+}
+
+const createStock = async () => {
+
+}
+
+const getStockData = async (stock) => {
+  const response = await fetch(`https://stock-price-checker-proxy.freecodecamp.rocks/v1/stock/${stock}/quote`)
+  const { symbol, lastestPrice } = await responsejson();
+  return { symbol, latestPrice };
+}
+
 module.exports = function (app) {
   app.route('/api/stock-prices')
     .get(function (req, res){
