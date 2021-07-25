@@ -3,6 +3,8 @@ require('dotenv').config();
 const express     = require('express');
 const bodyParser  = require('body-parser');
 const cors        = require('cors');
+const helmet = require('helmet');
+
 const mongoose = require('mongoose');
 
 const apiRoutes         = require('./routes/api.js');
@@ -10,6 +12,16 @@ const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
 
 const app = express();
+
+//saw this online in a forum
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self"],
+    scriptSrc: ["'self", "https://code.jquery.com/jquery-2.2.1.min.js"],
+    styleSrc: ["'self"],
+  }
+}))
+
 mongoose.connect(process.env.DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
