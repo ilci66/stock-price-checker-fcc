@@ -65,7 +65,7 @@ module.exports = function (app) {
           stockData.push({
             stock:symbol,
             price:latestPrice,
-            likes:firstStockSaved.likes.length - secondStockSaved.likes.length
+            rel_likes:firstStockSaved.likes.length - secondStockSaved.likes.length
           })
         }
         if(!symbol2){
@@ -76,7 +76,7 @@ module.exports = function (app) {
           stockData.push({
             stock:symbol2,
             price:latestPrice2,
-            likes:secondStockSaved.likes.length - firstStockSaved.likes.length 
+            rel_likes:secondStockSaved.likes.length - firstStockSaved.likes.length 
           })
         }
         res.json({stockData})
