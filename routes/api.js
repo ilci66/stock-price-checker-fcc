@@ -89,7 +89,7 @@ module.exports = function (app) {
       // res.json({message: "a lot cleaner this way"})
       if(!symbol){
         const saved = await saveStock(stock, like, ip)
-        console.log(saved)
+        console.log("saved",saved)
         res.json({stockData:{likes:saved.likes.length}})
       }
       const stockDataForOne = await saveStock(stock, like, ip);

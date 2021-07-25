@@ -14,13 +14,15 @@ const runner            = require('./test-runner');
 const app = express();
 
 //saw this online in a forum
-app.use(helmet.contentSecurityPolicy({
-  directives: {
-    defaultSrc: ["'self"],
-    scriptSrc: ["'self", "https://code.jquery.com/jquery-2.2.1.min.js"],
-    styleSrc: ["'self"],
-  },
-}))
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://code.jquery.com/jquery-2.2.1.min.js"],
+      styleSrc: ["'self'"],
+    },
+  })
+);
 
 mongoose.connect(process.env.DB, {
   useNewUrlParser: true,

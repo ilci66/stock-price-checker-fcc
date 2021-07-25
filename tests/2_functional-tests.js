@@ -84,7 +84,7 @@ suite('Functional Tests', function() {
       .query({stock:["GOOG", "MSFT"]})
       .end((err, res) => {
         assert.equal(res.status, 200)
-        console.log(res.body)
+        console.log("res body ",res.body)
         assert.include(res.body.stockData[0], {stock:"GOOG"})
         assert.include(res.body.stockData[1], {stock:"MSFT"})
         done()
@@ -99,7 +99,7 @@ suite('Functional Tests', function() {
     .query({stock:["GOOG", "MSFT"], like : "true"})
     .end((err, res) => {
       assert.equal(res.status, 200)
-      console.log(res.body)
+      console.log("res body", res.body)
       assert.include(res.body.stockData[0], {stock:"GOOG"})
       assert.include(res.body.stockData[1], {stock:"MSFT"})
       assert.exists(res.body.stockData[0].rel_likes)
