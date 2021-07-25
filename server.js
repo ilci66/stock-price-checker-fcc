@@ -19,7 +19,7 @@ app.use(helmet.contentSecurityPolicy({
     defaultSrc: ["'self"],
     scriptSrc: ["'self", "https://code.jquery.com/jquery-2.2.1.min.js"],
     styleSrc: ["'self"],
-  }
+  },
 }))
 
 mongoose.connect(process.env.DB, {
